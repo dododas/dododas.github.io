@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Home on Raibatak Das</title>
+    <link>https://dododas.github.io/</link>
+    <description>Recent content in Home on Raibatak Das</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 29 Dec 2020 22:36:55 -0500</lastBuildDate><atom:link href="https://dododas.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Animations with matplotlib</title>
+      <link>https://dododas.github.io/posts/2020/2020-12-29-matplotlib-rw/</link>
+      <pubDate>Tue, 29 Dec 2020 22:36:55 -0500</pubDate>
+      
+      <guid>https://dododas.github.io/posts/2020/2020-12-29-matplotlib-rw/</guid>
+      <description>&lt;p&gt;This post explains how to use the &lt;code&gt;matplotlib.animation&lt;/code&gt; module to create animated plots.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Test post</title>
+      <link>https://dododas.github.io/posts/2020/2020-01-02-test-post/</link>
+      <pubDate>Thu, 02 Jan 2020 20:48:08 -0500</pubDate>
+      
+      <guid>https://dododas.github.io/posts/2020/2020-01-02-test-post/</guid>
+      <description>&lt;p&gt;This is a sample post to test the appearance and layout. This site is created using the static site generator  &lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
