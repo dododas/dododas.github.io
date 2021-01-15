@@ -93,7 +93,7 @@ ani = anim.FuncAnimation(fig, move, init_func = init,
 
 The resulting output shows how particles diffuse and disperse away from their initial locations.
 
-{{< iframe src="rw-particles.html" >}}
+{{< iframe src="rw-particles.html" height="470px">}}
 
 ### Example 2: Particle tracks
 
@@ -151,7 +151,7 @@ ani = anim.FuncAnimation(fig, move, init_func = init,
 
 The output shows how diffusing particles explore space:
 
-{{< iframe src="rw-tracks.html" >}}
+{{< iframe src="rw-tracks.html" height="470px">}}
 
 ### Example 3: Particle trails
 
@@ -194,14 +194,15 @@ ani = anim.FuncAnimation(fig, move, init_func = init,
 
 which produces the following output
 
-{{< iframe src="rw-trails.html" >}}
+{{< iframe src="rw-trails.html" height="470px">}}
 
 ## Summary and references
 
-These examples demonstrate how the `matplotlib.animation` module can be used to create dynamic visualizations. 
+These examples demonstrate how the `matplotlib.animation` module can be used to create dynamic visualizations. The complete code for this post is available in [this jupyter notebook](matplotlib-animations.ipynb) 
 
 **References**:
 - https://matplotlib.org/3.3.3/api/animation_api.html
 - https://towardsdatascience.com/animations-with-matplotlib-d96375c5442c
 - https://brushingupscience.com/2016/06/21/matplotlib-animations-the-easy-way/
 - https://brushingupscience.com/2019/08/01/elaborate-matplotlib-animations/
+- [Jupyter notebook with code](matplotlib-animations.ipynb)
