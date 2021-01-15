@@ -198,11 +198,11 @@ which produces the following output
 
 ## Summary and references
 
-These examples demonstrate how the `matplotlib.animation` module can be used to create dynamic visualizations. The complete code for this post is available in [this jupyter notebook](matplotlib-animations.ipynb) 
+These examples demonstrate how the `matplotlib.animation` module can be used to create dynamic visualizations. The complete code for this post is available in [this jupyter notebook](https://github.com/dododas/dododas.github.io/blob/main/content/posts/2020-12-29-matplotlib-rw/matplotlib-animations.ipynb) 
 
 **References**:
 - https://matplotlib.org/3.3.3/api/animation_api.html
 - https://towardsdatascience.com/animations-with-matplotlib-d96375c5442c
 - https://brushingupscience.com/2016/06/21/matplotlib-animations-the-easy-way/
 - https://brushingupscience.com/2019/08/01/elaborate-matplotlib-animations/
-- [Jupyter notebook with code](matplotlib-animations.ipynb)
+- [Download Jupyter notebook with code](matplotlib-animations.ipynb)
