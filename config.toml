@@ -1,0 +1,30 @@
+# Site settings
+baseURL = "https://dododas.github.io"
+languageCode = "en-us"
+title = "Raibatak Das"
+footnotereturnlinkcontents = "↩"
+
+# Theme
+theme = "hugo-book"
+
+# Needed for mermaid/katex shortcodes
+[markup]
+[markup.goldmark.renderer]
+  unsafe = true
+
+# Syntax highlighting
+[markup.highlight]
+  style = "manni"
+
+[markup.tableOfContents]
+  startLevel = 1
+
+# Permalink structure
+[permalinks]
+    posts = "/posts/:year/:filename"
+
+# Footer
+[params]
+    footer = "&copy; [Raibatak Das](http://dododas.github.io)"
+    # Create side bar menu from custom file (a leaf bundle in Hugo-speak)
+    BookMenuBundle = '/menu'
