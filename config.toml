@@ -1,5 +1,5 @@
 # Site settings
-baseURL = "https://dododas.github.io"
+baseURL = "https://dododas.github.io/"
 languageCode = "en-us"
 title = "Raibatak Das"
 footnotereturnlinkcontents = "↩"
