@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Animations with matplotlib 1: Making waves"><meta property="og:title" content="Animations with matplotlib 1: Making waves" />
+<meta property="og:description" content="This is the first part of a series on how to use the matplotlib.animation module to create animated plots. The examples here show how to visualize traveling waves and the phenomenon of superposition." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://dododas.github.io/posts/2021/2021-01-17-matplotlib-waves/" />
+<meta property="article:published_time" content="2021-01-17T10:20:19-05:00" />
+<meta property="article:modified_time" content="2021-01-17T10:20:19-05:00" />
+<title>Animations with matplotlib 1: Making waves | Raibatak Das</title>
+<link rel="icon" href="/favicon.png" type="image/x-icon">
+
+
+<link rel="stylesheet" href="/book.min.68d45956421753cdf6bcfc865ede445c56afc5bcaaebfe02961f44fe77d8f45a.css" integrity="sha256-aNRZVkIXU832vPyGXt5EXFavxbyq6/4Clh9E/nfY9Fo=">
+
+
+<script defer src="/en.search.min.0e6ec22930eb87cc5aeb6b5b8d0d258fc83882d046db7b6f9319407738527abf.js" integrity="sha256-Dm7CKTDrh8xa62tbjQ0lj8g4gtBG23tvkxlAdzhSer8="></script>
+
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css" integrity="sha384-AfEj0r4/OFrOo5t7NnNe46zW/tFgW6x/bCJG8FqQCEo3+Aro6EYUG4+cU+KJWu/X" crossorigin="anonymous">
+
+  
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js" integrity="sha384-g7c+Jr9ZivxKLnZTDUhnkOnsh30B4H0rpLUpJ4jAIKs4fnJI+sEnkvrMWph2EDg4" crossorigin="anonymous"></script>
+
+  
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js" integrity="sha384-mll67QQFJfxn0IYznZYonOWZ644AWYC+Pt2cHqMaRhXVrursRwvLnLaebdGIlYNa" crossorigin="anonymous" 
+  onload="renderMathInElement(document.body);"></script>
+  
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+              delimiters: [
+                  {left: "$$", right: "$$", display: true},
+                  {left: "$", right: "$", display: false},
+              ]
+          }
+          );
+    });
+  </script>
+
+
+<link rel="stylesheet" href="/css/custom.css">
+
+
+</head>
+
+<body>
+  <input type="checkbox" class="hidden" id="menu-control" />
+  <main class="flex container">
+
+    <aside class="book-menu fixed">
+      <nav>
+<h2 class="book-brand">
+  <a href="https://dododas.github.io/"><span>Raibatak Das</span>
+  </a>
+</h2>
+
+
+<div class="book-search">
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" />
+  <div class="book-search-spinner spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+
+
+
+
+
+    <ul>
+<li><a href="/posts"><strong>Posts</strong></a></li>
+<li><a href="/"><strong>About</strong></a></li>
+</ul>
+
+
+
+
+
+</nav>
+
+
+<script>
+(function() {
+  var menu = document.querySelector("aside.book-menu nav");
+  addEventListener("beforeunload", function(event) {
+    localStorage.setItem("menu.scrollTop", menu.scrollTop);
+  });
+  menu.scrollTop = localStorage.getItem("menu.scrollTop");
+})();
+</script>
+
+    </aside>
+
+    <div class="book-page">
+      <header class="flex align-center justify-between book-header">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+  <strong>Animations with matplotlib 1: Making waves</strong>
+</header>
+
+      
+<article class="markdown">
+  <h1>
+    <a href="/posts/2021/2021-01-17-matplotlib-waves/">Animations with matplotlib 1: Making waves</a>
+  </h1>
+  
+
+<div>
+
+  <h5>January 17, 2021</h5>
+
+
+
+  
+
+  
+    <a href="/tags/matplotlib/">matplotlib</a>, <a href="/tags/python/">python</a>, <a href="/tags/waves/">waves</a>
+    <br />
+  
+
+
+</div>
+
+
+  <p><p>This is the first part of a series on how to use the <code>matplotlib.animation</code> module to create animated plots. The examples here show how to visualize traveling waves and the phenomenon of superposition.</p>
+<h2 id="introduction">Introduction</h2>
+<p><code>matplotlib</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> is a python library for creating high quality scientific plots. It contains a module <code>matplotlib.animation</code> that can be used to create animations. This post shows examples of using this module to visualize wave motion.</p>
+<h2 id="background">Background</h2>
+<p>This is a short technical background on wave motion that explains the ideas behind the <a href="#examples">code examples below</a></p>
+<h3 id="wave-equation">Wave equation</h3>
+<p>Mathematically, wave motion is described by a partial differential equation called the <strong>wave equation</strong>. A 1-D version of the wave equation has the following form:
+$$ \frac{\partial^2 u}{\partial t^2} = c^2 \frac{\partial^2 u}{\partial x^2} $$</p>
+<p>where $u(x, t)$ is the solution for some given initial conditions - usually the initial position $u(x, 0)$ and initial velocity $\partial u / \partial t (x, 0)$ of the system.</p>
+<div class="book-columns flex flex-wrap">
+  
+  <div class="flex-even markdown-inner">
+    The examples below simulate the solution to the wave equation for a plucked string of length $L$ that is anchored at two ends. At time 0, the string is pulled in the middle to create an inverted v-shape, and then let go. The solution $u(x, t)$ is the vertical position of the string at subsequent times. The initial position of the string is the piecewise function:
+$$u(x, 0) = \begin{cases}
+\frac{x}{L/2}     &amp; \text{for }    0 \leq x &lt; L/2 \\
+\frac{L - x}{L/2} &amp; \text{for }  L/2 \leq x \leq L \end{cases} $$
+and its initial velocity is $\partial u / \partial t(x, 0) = 0$.
+  </div>
+  
+  <div class="flex-even markdown-inner">
+    <figure>
+    <img src="plucked-string-t0.png"
+         alt="Initial position of plucked string"/> <figcaption>
+            <p>Initial position of plucked string</p>
+        </figcaption>
+</figure>
+
+  </div>
+  
+</div>
+
+<h3 id="traveling-waves">Traveling waves</h3>
+<p>One way to solve the wave equation is by using traveling waves. A traveling wave is a function of the form:
+$$ u(x, t) = f(x \pm ct) $$
+At time $t = 0$, the function $f(x)$ is a shape in space. Replacing $x$ by $x-ct$ transposes this shape to the right by a distance $ct$. Therefore, $f(x - ct)$ is the shape $f(x)$ traveling to the right at the speed $c$. The first set of animations simulate traveling waves.</p>
+<h3 id="superposition">Superposition</h3>
+<p>A traveling wave is a <em>general</em> solution of the wave equation. The wave equation is linear, which means any linear combination of solutions is also a solution. More strongly, it can be shown that all solutions to the wave equation are of the form:
+$$u(x, t) = F(x + ct) + G(x - ct)$$
+that is, a <strong>superposition</strong> of two traveling waves.</p>
+<p>The specific solution for the plucked string problem is trivially simple. Given the initial shape, $f(x)$, and assuming the string is stationary at time 0, the subsequent motion of the string is<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>:
+$$u(x, t) = \frac{1}{2} \left[ f(x + ct) + f(x - ct) \right] $$
+This is known as the d&rsquo;Alembert solution to the wave equation.</p>
+<p>The second set of animations visualize this solution for the plucked string problem.</p>
+<h2 id="examples">Examples</h2>
+<p>The examples below show how to use <code>matplotlib.animation</code> to create animations of traveling waves. These examples follow a common template:</p>
+<ol>
+<li>Create a plot with the initial shape $y = f(x) = u(x, 0)$</li>
+<li>Update the shape by applying the transform $f(x) \to f(x - ct)$</li>
+</ol>
+<p>The function <code>FuncAnimation()</code> creates the animation by repeatedly calling the update function.</p>
+<p>First load the needed libraries:</p>
+<div class="highlight"><pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">numpy</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">np</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">matplotlib.pyplot</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">plt</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">matplotlib</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">mpl</span>
+<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">matplotlib.animation</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">anim</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">IPython.display</span> <span style="color:#069;font-weight:bold">import</span> HTML
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pathlib</span> <span style="color:#069;font-weight:bold">import</span> Path
+</code></pre></div><h3 id="example-1-traveling-waves">Example 1: Traveling waves</h3>
+<p>The first example produces a traveling sine wave:</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">f <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">lambda</span> x: np<span style="color:#555">.</span>sin(x)
+x <span style="color:#555">=</span> np<span style="color:#555">.</span>linspace(<span style="color:#555">-</span>np<span style="color:#555">.</span>pi, np<span style="color:#555">.</span>pi, <span style="color:#f60">100</span>)
+y <span style="color:#555">=</span> f(x)
+
+<span style="color:#09f;font-style:italic"># Initialize plot</span>
+fig, ax <span style="color:#555">=</span> plt<span style="color:#555">.</span>subplots(figsize <span style="color:#555">=</span> (<span style="color:#f60">7</span>, <span style="color:#f60">5</span>))
+wave, <span style="color:#555">=</span> ax<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C3&#34;</span>, lw <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+
+ax<span style="color:#555">.</span>set_xticks([<span style="color:#555">-</span>np<span style="color:#555">.</span>pi, <span style="color:#555">-</span>np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">2</span>, <span style="color:#f60">0</span>, np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">2</span>, np<span style="color:#555">.</span>pi])
+ax<span style="color:#555">.</span>set_xticklabels((<span style="color:#c30">r</span><span style="color:#c30">&#34;-$\pi$&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;-$\pi/2$&#34;</span>, <span style="color:#c30">&#34;0&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi/2$&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi$&#34;</span>))
+ax<span style="color:#555">.</span>set_yticks((<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">0</span>, <span style="color:#f60">1</span>))
+ax<span style="color:#555">.</span>grid(True)
+ax<span style="color:#555">.</span>set_title(<span style="color:#c30">r</span><span style="color:#c30">&#34;A traveling sine wave: $u(x, t) = \sin(x - ct)$&#34;</span>)
+
+<span style="color:#09f;font-style:italic"># Transpose f(x) -&gt; f(x - ct)</span>
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">shift</span>(t, c <span style="color:#555">=</span> <span style="color:#f60">1</span>):
+    <span style="color:#09f;font-style:italic"># Transpose the wave</span>
+    new_y <span style="color:#555">=</span> f(x <span style="color:#555">-</span> c<span style="color:#555">*</span>t)
+    wave<span style="color:#555">.</span>set_ydata(new_y)
+    <span style="color:#069;font-weight:bold">return</span>(wave,)
+
+<span style="color:#09f;font-style:italic"># Set up animation</span>
+ani <span style="color:#555">=</span> anim<span style="color:#555">.</span>FuncAnimation(fig, shift, frames <span style="color:#555">=</span> <span style="color:#f60">190</span>, 
+                         fargs <span style="color:#555">=</span> (<span style="color:#f60">0.1</span>,),
+                         interval <span style="color:#555">=</span> <span style="color:#f60">30</span>, blit <span style="color:#555">=</span> True)
+</code></pre></td></tr></table>
+</div>
+</div><p>This produces the following animation:</p>
+<div>
+  <iframe width="100%" height="410px" src="traveling-sin-wave.html" name="" style="border:none;"> </iframe> 
+</div>
+
+<p>The function $f()$ can have any arbitrary shape. For example, this next animation code block produces a traveling wave packet whose shape is defined by the highlighted line.  Also note how changing the velocity $c$ to a negative value changes the direction of traveling wave.</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="display:block;width:100%;background-color:#d8dada"><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span></span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># Define shape of wavepacket</span>
+x <span style="color:#555">=</span> np<span style="color:#555">.</span>linspace(<span style="color:#555">-</span>np<span style="color:#555">.</span>pi, np<span style="color:#555">.</span>pi, <span style="color:#f60">200</span>)
+<span style="display:block;width:100%;background-color:#d8dada">f <span style="color:#555">=</span> <span style="color:#069;font-weight:bold">lambda</span> x: np<span style="color:#555">.</span>exp(<span style="color:#555">-</span> x<span style="color:#555">**</span><span style="color:#f60">2</span> <span style="color:#555">/</span> <span style="color:#f60">2</span>) <span style="color:#555">*</span> np<span style="color:#555">.</span>cos(<span style="color:#f60">10</span><span style="color:#555">*</span>x)
+</span>y <span style="color:#555">=</span> f(x)
+
+<span style="color:#09f;font-style:italic"># Initialize plot</span>
+fig, ax <span style="color:#555">=</span> plt<span style="color:#555">.</span>subplots(figsize <span style="color:#555">=</span> (<span style="color:#f60">7</span>, <span style="color:#f60">5</span>))
+wavepacket, <span style="color:#555">=</span> ax<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C3&#34;</span>, lw <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+
+ax<span style="color:#555">.</span>set_xticks([<span style="color:#555">-</span>np<span style="color:#555">.</span>pi, <span style="color:#555">-</span>np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">2</span>, <span style="color:#f60">0</span>, np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">2</span>, np<span style="color:#555">.</span>pi])
+ax<span style="color:#555">.</span>set_xticklabels((<span style="color:#c30">r</span><span style="color:#c30">&#34;-$\pi$&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;-$\pi/2$&#34;</span>, <span style="color:#c30">&#34;0&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi/2$&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi$&#34;</span>))
+ax<span style="color:#555">.</span>set_yticks((<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">0</span>, <span style="color:#f60">1</span>))
+ax<span style="color:#555">.</span>set_title(<span style="color:#c30">r</span><span style="color:#c30">&#34;A wave packet&#34;</span>)
+
+<span style="color:#09f;font-style:italic"># Transpose f(x) -&gt; f(x - ct)</span>
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">shift</span>(t, c <span style="color:#555">=</span> <span style="color:#f60">1</span>):
+    <span style="color:#09f;font-style:italic"># Transpose the wave</span>
+    new_y <span style="color:#555">=</span> f(x <span style="color:#555">-</span> c<span style="color:#555">*</span>t)
+    wavepacket<span style="color:#555">.</span>set_ydata(new_y)
+    <span style="color:#069;font-weight:bold">return</span>(wavepacket,)
+
+<span style="color:#09f;font-style:italic"># Animate</span>
+ani <span style="color:#555">=</span> anim<span style="color:#555">.</span>FuncAnimation(fig, shift, frames <span style="color:#555">=</span> <span style="color:#f60">200</span>, fargs <span style="color:#555">=</span> (<span style="color:#f60">0.03</span>,),
+                         interval <span style="color:#555">=</span> <span style="color:#f60">30</span>, blit <span style="color:#555">=</span> True)
+</code></pre></td></tr></table>
+</div>
+</div><div>
+  <iframe width="100%" height="410px" src="wave-packet.html" name="" style="border:none;"> </iframe> 
+</div>
+
+<h3 id="example-2-superposition">Example 2: Superposition</h3>
+<p>The next set of examples visuailzes the d&rsquo;Alembert solution to the wave equation for a plucked string that is anchored at $x = 0$ and $x = \pi$, and at time $t = 0$ is in the inverted-V configuration. The initial shape $f(x)$ is defined over $x \in [0, \pi]$. To construct the traveling wave solution, first extend this over entire real line by constructing an odd periodic extension</p>
+<div class="highlight"><pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">y</span>(x):
+    <span style="color:#c30">&#34;&#34;&#34;Odd periodic extension of plucked string&#34;&#34;&#34;</span>
+    pi <span style="color:#555">=</span> np<span style="color:#555">.</span>pi
+    x <span style="color:#555">=</span> x <span style="color:#555">%</span> (<span style="color:#f60">2</span> <span style="color:#555">*</span> pi)
+    <span style="color:#069;font-weight:bold">if</span> (x <span style="color:#555">&lt;</span> pi<span style="color:#555">/</span><span style="color:#f60">2</span>):
+        h <span style="color:#555">=</span> x <span style="color:#555">/</span> (pi<span style="color:#555">/</span><span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">elif</span> (x <span style="color:#555">&gt;=</span> pi<span style="color:#555">/</span><span style="color:#f60">2</span>) <span style="color:#000;font-weight:bold">and</span> (x <span style="color:#555">&lt;</span> <span style="color:#f60">3</span> <span style="color:#555">*</span> pi<span style="color:#555">/</span><span style="color:#f60">2</span>):
+        h <span style="color:#555">=</span> <span style="color:#f60">1</span> <span style="color:#555">-</span> (x <span style="color:#555">-</span> pi<span style="color:#555">/</span><span style="color:#f60">2</span>)<span style="color:#555">/</span>(pi<span style="color:#555">/</span><span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">else</span>:
+        h <span style="color:#555">=</span> (x <span style="color:#555">-</span> <span style="color:#f60">2</span><span style="color:#555">*</span>pi)<span style="color:#555">/</span>(pi<span style="color:#555">/</span><span style="color:#f60">2</span>)
+    <span style="color:#069;font-weight:bold">return</span>(h)
+
+f <span style="color:#555">=</span> np<span style="color:#555">.</span>vectorize(y)
+</code></pre></div><p>The extended function $f(x)$ looks like this:
+<figure>
+    <img src="plucked-string.png"/> 
+</figure>
+</p>
+<p>Next, use this periodic extension to construct two traveling waves. The superposition of these traveling waves produces the dynamics of the plucked string as shown in this animation:</p>
+<div>
+  <iframe width="100%" height="555" src="superposition-lwave-rwave.html" name="" style="border:none;"> </iframe> 
+</div>
+
+<p>This animation is the output of the following code block:</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># Compute initial shape of string</span>
+x <span style="color:#555">=</span> np<span style="color:#555">.</span>append(np<span style="color:#555">.</span>linspace(<span style="color:#f60">0</span>, np<span style="color:#555">.</span>pi, <span style="color:#f60">99</span>), np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">2</span>)
+x<span style="color:#555">.</span>sort()
+y <span style="color:#555">=</span> f(x)
+
+<span style="color:#09f;font-style:italic"># Plot initial shape</span>
+fig, (ax0, ax1) <span style="color:#555">=</span> plt<span style="color:#555">.</span>subplots(figsize <span style="color:#555">=</span> (<span style="color:#f60">7</span>, <span style="color:#f60">6</span>), nrows <span style="color:#555">=</span> <span style="color:#f60">2</span>, 
+                               sharex <span style="color:#555">=</span> <span style="color:#c30">&#34;all&#34;</span>, sharey <span style="color:#555">=</span> <span style="color:#c30">&#34;all&#34;</span>)
+plt<span style="color:#555">.</span>subplots_adjust(hspace <span style="color:#555">=</span> <span style="color:#f60">0.3</span>)
+rwave,  <span style="color:#555">=</span> ax0<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C2&#34;</span>, label <span style="color:#555">=</span> <span style="color:#c30">r</span><span style="color:#c30">&#34;$f(x - ct)$&#34;</span>)
+lwave,  <span style="color:#555">=</span> ax0<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C1&#34;</span>, label <span style="color:#555">=</span> <span style="color:#c30">r</span><span style="color:#c30">&#34;$f(x + ct)$&#34;</span>)
+string, <span style="color:#555">=</span> ax1<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C0&#34;</span>, lw <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+
+ax0<span style="color:#555">.</span>set_title(<span style="color:#c30">r</span><span style="color:#c30">&#34;Traveling waves&#34;</span>)
+ax0<span style="color:#555">.</span>legend(loc <span style="color:#555">=</span> <span style="color:#c30">&#34;lower right&#34;</span>)
+ax1<span style="color:#555">.</span>set_title(<span style="color:#c30">r</span><span style="color:#c30">&#34;Superposition:  $[f(x + ct) + f(x - ct)]/2$&#34;</span>)
+ax1<span style="color:#555">.</span>set_xticks([<span style="color:#f60">0</span>, np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">2</span>, np<span style="color:#555">.</span>pi])
+ax1<span style="color:#555">.</span>set_xticklabels((<span style="color:#c30">&#34;0&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi/2$&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi$&#34;</span>))
+<span style="color:#069;font-weight:bold">for</span> ax <span style="color:#000;font-weight:bold">in</span> (ax0, ax1):
+    ax<span style="color:#555">.</span>set_ylim([<span style="color:#555">-</span><span style="color:#f60">1.1</span>, <span style="color:#f60">1.1</span>])
+    ax<span style="color:#555">.</span>set_yticks((<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">0</span>, <span style="color:#f60">1</span>))
+    ax<span style="color:#555">.</span>grid(True)
+
+<span style="color:#09f;font-style:italic"># Compute traveling wave solution</span>
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">shift</span>(t, c <span style="color:#555">=</span> <span style="color:#f60">1</span>):
+    <span style="color:#09f;font-style:italic"># Transpose each traveling wave</span>
+    new_r, new_l <span style="color:#555">=</span> f(x <span style="color:#555">-</span> c<span style="color:#555">*</span>t), f(x <span style="color:#555">+</span> c<span style="color:#555">*</span>t)
+    new_y <span style="color:#555">=</span> (new_l <span style="color:#555">+</span> new_r)<span style="color:#555">/</span><span style="color:#f60">2</span>
+    rwave<span style="color:#555">.</span>set_ydata(new_r)
+    lwave<span style="color:#555">.</span>set_ydata(new_l)
+    string<span style="color:#555">.</span>set_ydata(new_y)
+    <span style="color:#069;font-weight:bold">return</span>(lwave, rwave, string)
+
+<span style="color:#09f;font-style:italic"># Animate</span>
+ani <span style="color:#555">=</span> anim<span style="color:#555">.</span>FuncAnimation(fig, shift, frames <span style="color:#555">=</span> <span style="color:#f60">189</span>, fargs <span style="color:#555">=</span> (<span style="color:#f60">0.1</span>,),
+                         interval <span style="color:#555">=</span> <span style="color:#f60">30</span>, blit <span style="color:#555">=</span> True)
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="example-3-varying-initial-shape">Example 3: Varying initial shape</h3>
+<p>The final examples use the traveling wave solution to simulate a vibrating string with different initial shapes. The shapes are created using interpolation. The next animation shows the behavior for an asymmetric shape:</p>
+<div>
+  <iframe width="100%" height="555px" src="asymmetric-initial-shape.html" name="" style="border:none;"> </iframe> 
+</div>
+
+<p>This is generated using the following code block:</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># Plucked string with asymmetric initial shape</span>
+<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">scipy</span> <span style="color:#069;font-weight:bold">import</span> interpolate
+
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">y2</span>(x):
+    <span style="color:#c30">&#34;&#34;&#34;Odd periodic extension of plucked string&#34;&#34;&#34;</span>
+    pi <span style="color:#555">=</span> np<span style="color:#555">.</span>pi
+    <span style="color:#09f;font-style:italic"># Use linear interpolation to generate initial shape</span>
+    x0, y0 <span style="color:#555">=</span> [<span style="color:#f60">0</span>, pi<span style="color:#555">/</span><span style="color:#f60">4</span>, pi, <span style="color:#f60">7</span><span style="color:#555">*</span>pi<span style="color:#555">/</span><span style="color:#f60">4</span>, <span style="color:#f60">2</span><span style="color:#555">*</span>pi], [<span style="color:#f60">0</span>, <span style="color:#f60">1</span>, <span style="color:#f60">0</span>, <span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">0</span>]
+    u0 <span style="color:#555">=</span> interpolate<span style="color:#555">.</span>interp1d(x0, y0)
+    <span style="color:#09f;font-style:italic"># Make periodic</span>
+    x <span style="color:#555">=</span> x <span style="color:#555">%</span> (<span style="color:#f60">2</span> <span style="color:#555">*</span> pi)
+    <span style="color:#069;font-weight:bold">return</span>(u0(x))
+
+f2 <span style="color:#555">=</span> np<span style="color:#555">.</span>vectorize(y2)
+
+<span style="color:#09f;font-style:italic"># Generate initial shape</span>
+x <span style="color:#555">=</span> np<span style="color:#555">.</span>append(np<span style="color:#555">.</span>linspace(<span style="color:#f60">0</span>, np<span style="color:#555">.</span>pi, <span style="color:#f60">98</span>), np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">4</span>)
+x<span style="color:#555">.</span>sort()
+y <span style="color:#555">=</span> f2(x)
+
+<span style="color:#09f;font-style:italic"># Plot initial shape</span>
+fig, (ax0, ax1) <span style="color:#555">=</span> plt<span style="color:#555">.</span>subplots(figsize <span style="color:#555">=</span> (<span style="color:#f60">7</span>, <span style="color:#f60">6</span>), nrows <span style="color:#555">=</span> <span style="color:#f60">2</span>, 
+                           sharex <span style="color:#555">=</span> <span style="color:#c30">&#34;all&#34;</span>, sharey <span style="color:#555">=</span> <span style="color:#c30">&#34;all&#34;</span>)
+plt<span style="color:#555">.</span>subplots_adjust(hspace <span style="color:#555">=</span> <span style="color:#f60">0.3</span>)
+lwave,  <span style="color:#555">=</span> ax0<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C1&#34;</span>, 
+                   label <span style="color:#555">=</span> <span style="color:#c30">r</span><span style="color:#c30">&#34;$f(x + ct)$&#34;</span>)
+rwave,  <span style="color:#555">=</span> ax0<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C2&#34;</span>, 
+                   label <span style="color:#555">=</span> <span style="color:#c30">r</span><span style="color:#c30">&#34;$f(x - ct)$&#34;</span>)
+string, <span style="color:#555">=</span> ax1<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C0&#34;</span>, lw <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+
+ax0<span style="color:#555">.</span>set_title(<span style="color:#c30">r</span><span style="color:#c30">&#34;Traveling waves&#34;</span>)
+ax0<span style="color:#555">.</span>legend(loc <span style="color:#555">=</span> <span style="color:#c30">&#34;lower right&#34;</span>)
+ax1<span style="color:#555">.</span>set_title(<span style="color:#c30">r</span><span style="color:#c30">&#34;Superposition:  $[f(x + ct) + f(x - ct)]/2$&#34;</span>)
+ax1<span style="color:#555">.</span>set_xticks([<span style="color:#f60">0</span>, np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">2</span>, np<span style="color:#555">.</span>pi])
+ax1<span style="color:#555">.</span>set_xticklabels((<span style="color:#c30">&#34;0&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi/2$&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi$&#34;</span>))
+<span style="color:#069;font-weight:bold">for</span> ax <span style="color:#000;font-weight:bold">in</span> (ax0, ax1):
+    ax<span style="color:#555">.</span>set_ylim([<span style="color:#555">-</span><span style="color:#f60">1.1</span>, <span style="color:#f60">1.1</span>])
+    ax<span style="color:#555">.</span>set_yticks((<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">0</span>, <span style="color:#f60">1</span>))
+    ax<span style="color:#555">.</span>grid(True)
+
+<span style="color:#09f;font-style:italic"># Compute traveling wave solution</span>
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">shift</span>(t, c <span style="color:#555">=</span> <span style="color:#f60">1</span>):
+    <span style="color:#09f;font-style:italic"># Transpose each traveling wave</span>
+    new_l, new_r <span style="color:#555">=</span> f2(x <span style="color:#555">+</span> c<span style="color:#555">*</span>t), f2(x <span style="color:#555">-</span> c<span style="color:#555">*</span>t)
+    new_y <span style="color:#555">=</span> (new_l <span style="color:#555">+</span> new_r)<span style="color:#555">/</span><span style="color:#f60">2</span>
+    rwave<span style="color:#555">.</span>set_ydata(new_r)
+    lwave<span style="color:#555">.</span>set_ydata(new_l)
+    string<span style="color:#555">.</span>set_ydata(new_y)
+    <span style="color:#069;font-weight:bold">return</span>(lwave, rwave, string)
+
+<span style="color:#09f;font-style:italic"># Animate</span>
+ani <span style="color:#555">=</span> anim<span style="color:#555">.</span>FuncAnimation(fig, shift, frames <span style="color:#555">=</span> <span style="color:#f60">189</span>, 
+                         fargs <span style="color:#555">=</span> (<span style="color:#f60">0.1</span>,),
+                         interval <span style="color:#555">=</span> <span style="color:#f60">30</span>, blit <span style="color:#555">=</span> True)
+</code></pre></td></tr></table>
+</div>
+</div><p>The last example uses a higher order interpolation to produce a smoother initial shape that looks more natural.</p>
+<div>
+  <iframe width="100%" height="555px" src="smooth-initial-shape.html" name="" style="border:none;"> </iframe> 
+</div>
+
+<p>This is the output of the following code block</p>
+<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># Traveling wave solution to plucked string </span>
+<span style="color:#09f;font-style:italic"># with asymmetric initial shape</span>
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">y3</span>(x):
+    <span style="color:#c30">&#34;&#34;&#34;Odd periodic extension of plucked string&#34;&#34;&#34;</span>
+    pi <span style="color:#555">=</span> np<span style="color:#555">.</span>pi
+    <span style="color:#09f;font-style:italic"># Use cubic interpolation to generate smooth initial shape</span>
+    x0 <span style="color:#555">=</span> np<span style="color:#555">.</span>linspace(<span style="color:#f60">0</span>, <span style="color:#f60">2</span><span style="color:#555">*</span>pi, <span style="color:#f60">9</span>)
+    y0 <span style="color:#555">=</span> f2(x0)
+    u0 <span style="color:#555">=</span> interpolate<span style="color:#555">.</span>interp1d(x0, y0, kind <span style="color:#555">=</span> <span style="color:#f60">3</span>)
+    x <span style="color:#555">=</span> x <span style="color:#555">%</span> (<span style="color:#f60">2</span> <span style="color:#555">*</span> pi)
+    <span style="color:#069;font-weight:bold">return</span>(u0(x))
+
+f3 <span style="color:#555">=</span> np<span style="color:#555">.</span>vectorize(y3) <span style="color:#09f;font-style:italic"># To work on numpy arrays</span>
+
+<span style="color:#09f;font-style:italic"># Generate initial shape</span>
+x <span style="color:#555">=</span> np<span style="color:#555">.</span>append(np<span style="color:#555">.</span>linspace(<span style="color:#f60">0</span>, np<span style="color:#555">.</span>pi, <span style="color:#f60">98</span>), np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">4</span>)
+x<span style="color:#555">.</span>sort()
+y <span style="color:#555">=</span> f3(x)
+
+<span style="color:#09f;font-style:italic"># Plot initial shape</span>
+fig, (ax0, ax1) <span style="color:#555">=</span> plt<span style="color:#555">.</span>subplots(figsize <span style="color:#555">=</span> (<span style="color:#f60">7</span>, <span style="color:#f60">6</span>), nrows <span style="color:#555">=</span> <span style="color:#f60">2</span>, 
+                           sharex <span style="color:#555">=</span> <span style="color:#c30">&#34;all&#34;</span>, sharey <span style="color:#555">=</span> <span style="color:#c30">&#34;all&#34;</span>)
+plt<span style="color:#555">.</span>subplots_adjust(hspace <span style="color:#555">=</span> <span style="color:#f60">0.3</span>)
+lwave,  <span style="color:#555">=</span> ax0<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C1&#34;</span>, 
+                   label <span style="color:#555">=</span> <span style="color:#c30">r</span><span style="color:#c30">&#34;$f(x + ct)$&#34;</span>)
+rwave,  <span style="color:#555">=</span> ax0<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C2&#34;</span>, 
+                   label <span style="color:#555">=</span> <span style="color:#c30">r</span><span style="color:#c30">&#34;$f(x - ct)$&#34;</span>)
+string, <span style="color:#555">=</span> ax1<span style="color:#555">.</span>plot(x, y, <span style="color:#c30">&#34;-&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C0&#34;</span>, lw <span style="color:#555">=</span> <span style="color:#f60">2</span>)
+
+ax0<span style="color:#555">.</span>set_title(<span style="color:#c30">r</span><span style="color:#c30">&#34;Traveling waves&#34;</span>)
+ax0<span style="color:#555">.</span>legend(loc <span style="color:#555">=</span> <span style="color:#c30">&#34;lower right&#34;</span>)
+ax1<span style="color:#555">.</span>set_title(<span style="color:#c30">r</span><span style="color:#c30">&#34;Superposition:  $[f(x + ct) + f(x - ct)]/2$&#34;</span>)
+ax1<span style="color:#555">.</span>set_xticks([<span style="color:#f60">0</span>, np<span style="color:#555">.</span>pi<span style="color:#555">/</span><span style="color:#f60">2</span>, np<span style="color:#555">.</span>pi])
+ax1<span style="color:#555">.</span>set_xticklabels((<span style="color:#c30">&#34;0&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi/2$&#34;</span>, <span style="color:#c30">r</span><span style="color:#c30">&#34;$\pi$&#34;</span>))
+<span style="color:#069;font-weight:bold">for</span> ax <span style="color:#000;font-weight:bold">in</span> (ax0, ax1):
+    ax<span style="color:#555">.</span>set_ylim([<span style="color:#555">-</span><span style="color:#f60">1.1</span>, <span style="color:#f60">1.1</span>])
+    ax<span style="color:#555">.</span>set_yticks((<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">0</span>, <span style="color:#f60">1</span>))
+    ax<span style="color:#555">.</span>grid(True)
+
+<span style="color:#09f;font-style:italic"># Compute traveling wave solution</span>
+<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">shift</span>(t, c <span style="color:#555">=</span> <span style="color:#f60">1</span>):
+    <span style="color:#09f;font-style:italic"># Transpose each traveling wave</span>
+    new_l, new_r <span style="color:#555">=</span> f3(x <span style="color:#555">+</span> c<span style="color:#555">*</span>t), f3(x <span style="color:#555">-</span> c<span style="color:#555">*</span>t)
+    new_y <span style="color:#555">=</span> (new_l <span style="color:#555">+</span> new_r)<span style="color:#555">/</span><span style="color:#f60">2</span>
+    rwave<span style="color:#555">.</span>set_ydata(new_r)
+    lwave<span style="color:#555">.</span>set_ydata(new_l)
+    string<span style="color:#555">.</span>set_ydata(new_y)
+    <span style="color:#069;font-weight:bold">return</span>(lwave, rwave, string)
+
+<span style="color:#09f;font-style:italic"># Animate</span>
+ani <span style="color:#555">=</span> anim<span style="color:#555">.</span>FuncAnimation(fig, shift, frames <span style="color:#555">=</span> <span style="color:#f60">189</span>, 
+                         fargs <span style="color:#555">=</span> (<span style="color:#f60">0.1</span>,),
+                         interval <span style="color:#555">=</span> <span style="color:#f60">30</span>, blit <span style="color:#555">=</span> True)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="summary-and-references">Summary and References</h2>
+<p>These examples demonstrate how the <code>matplotlib.animation</code> module can be used to create dynamic visualizations. The complete code for this post is available in <a href="mpl-wave-animations.ipynb">this jupyter notebook</a></p>
+<p><strong>References</strong>:</p>
+<ul>
+<li><a href="https://matplotlib.org/3.3.3/api/animation_api.html">https://matplotlib.org/3.3.3/api/animation_api.html</a></li>
+<li><a href="https://towardsdatascience.com/animations-with-matplotlib-d96375c5442c">https://towardsdatascience.com/animations-with-matplotlib-d96375c5442c</a></li>
+<li><a href="https://brushingupscience.com/2016/06/21/matplotlib-animations-the-easy-way/">https://brushingupscience.com/2016/06/21/matplotlib-animations-the-easy-way/</a></li>
+<li><a href="https://brushingupscience.com/2019/08/01/elaborate-matplotlib-animations/">https://brushingupscience.com/2019/08/01/elaborate-matplotlib-animations/</a></li>
+<li>Chapter 1 of <em>Fourier Analysis - An Introduction</em> by Stein &amp; Shakarchi</li>
+<li><em>Partial Differential Equations for Scientists and Engineers</em> by Farlow</li>
+<li><a href="mpl-wave-animations.ipynb">Download jupyter notebook with code</a></li>
+</ul>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p><a href="https://matplotlib.org/">https://matplotlib.org/</a> <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p>If the initial velocity is not 0, then the full solution is:
+$$u(x, t) = \frac{1}{2} \left[ f(x + ct) + f(x - ct) \right] + \frac{1}{2c} \int_{x - ct}^{x + ct} g(y) dy $$ <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section></p>
+</article>
+
+      <div class="book-footer justify-between">
+  
+
+  
+
+  
+
+</div>
+
+      
+    </div>
+
+    
+  
+
+  <aside class="book-toc levels-6 fixed">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#background">Background</a>
+          <ul>
+            <li><a href="#wave-equation">Wave equation</a></li>
+            <li><a href="#traveling-waves">Traveling waves</a></li>
+            <li><a href="#superposition">Superposition</a></li>
+          </ul>
+        </li>
+        <li><a href="#examples">Examples</a>
+          <ul>
+            <li><a href="#example-1-traveling-waves">Example 1: Traveling waves</a></li>
+            <li><a href="#example-2-superposition">Example 2: Superposition</a></li>
+            <li><a href="#example-3-varying-initial-shape">Example 3: Varying initial shape</a></li>
+          </ul>
+        </li>
+        <li><a href="#summary-and-references">Summary and References</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </aside>
+
+
+
+  </main>
+
+  
+</body>
+
+</html>

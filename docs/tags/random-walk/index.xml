@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>random walk on Raibatak Das</title>
+    <link>https://dododas.github.io/tags/random-walk/</link>
+    <description>Recent content in random walk on Raibatak Das</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 31 Jan 2021 22:36:55 -0500</lastBuildDate><atom:link href="https://dododas.github.io/tags/random-walk/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Animations with matplotlib - 2: Random walks</title>
+      <link>https://dododas.github.io/posts/2021/2021-01-31-matplotlib-rw/</link>
+      <pubDate>Sun, 31 Jan 2021 22:36:55 -0500</pubDate>
+      
+      <guid>https://dododas.github.io/posts/2021/2021-01-31-matplotlib-rw/</guid>
+      <description>&lt;p&gt;This post is the second in a series on how to use the &lt;code&gt;matplotlib.animation&lt;/code&gt; module to create animated plots. The examples here use this module to create animations of 2D random walks.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

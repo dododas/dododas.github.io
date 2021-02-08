@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>waves on Raibatak Das</title>
+    <link>https://dododas.github.io/tags/waves/</link>
+    <description>Recent content in waves on Raibatak Das</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 17 Jan 2021 10:20:19 -0500</lastBuildDate><atom:link href="https://dododas.github.io/tags/waves/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Animations with matplotlib 1: Making waves</title>
+      <link>https://dododas.github.io/posts/2021/2021-01-17-matplotlib-waves/</link>
+      <pubDate>Sun, 17 Jan 2021 10:20:19 -0500</pubDate>
+      
+      <guid>https://dododas.github.io/posts/2021/2021-01-17-matplotlib-waves/</guid>
+      <description>&lt;p&gt;This is the first part of a series on how to use the &lt;code&gt;matplotlib.animation&lt;/code&gt; module to create animated plots. The examples here show how to visualize traveling waves and the phenomenon of superposition.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
