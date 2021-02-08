@@ -337,7 +337,7 @@ ani = anim.FuncAnimation(fig, shift, frames = 189,
 
 ## Summary and References
 
-These examples demonstrate how the `matplotlib.animation` module can be used to create dynamic visualizations. The complete code for this post is available in [this jupyter notebook](mpl-wave-animations.ipynb) 
+These examples demonstrate how the `matplotlib.animation` module can be used to create dynamic visualizations. The complete code for this post is available in [this jupyter notebook](https://github.com/dododas/dododas.github.io/blob/main/content/posts/2021-01-17-matplotlib-waves/mpl-wave-animations.ipynb) 
 
 **References**:
 - https://matplotlib.org/3.3.3/api/animation_api.html

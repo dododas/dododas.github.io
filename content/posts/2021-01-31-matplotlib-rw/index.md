@@ -200,7 +200,7 @@ which produces the following output
 
 ## Summary and references
 
-These examples demonstrate how the `matplotlib.animation` module can be used to create dynamic visualizations. The complete code for this post is available in [this jupyter notebook](mpl-rw-animations.ipynb) 
+These examples demonstrate how the `matplotlib.animation` module can be used to create dynamic visualizations. The complete code for this post is available in [this jupyter notebook](https://github.com/dododas/dododas.github.io/blob/main/content/posts/2021-01-31-matplotlib-rw/mpl-rw-animations.ipynb) 
 
 **References**:
 - https://matplotlib.org/3.3.3/api/animation_api.html
