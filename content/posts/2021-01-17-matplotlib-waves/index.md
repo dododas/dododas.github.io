@@ -112,9 +112,9 @@ This produces the following animation:
 
 {{< iframe src="traveling-sin-wave.html" height="410px" >}}
 
-The function $f()$ can have any arbitrary shape. For example, this next animation code block produces a traveling wave packet whose shape is defined by the highlighted line.  Also note how changing the velocity $c$ to a negative value changes the direction of traveling wave. 
+The function $f()$ can have any arbitrary shape. For example, this next animation code block produces a traveling wave packet whose shape is defined by the first highlighted line.  Also note how changing the velocity to a negative value (see second highlighted line) changes the direction of traveling wave. 
 
-```python {linenos=table,hl_lines=[3]}
+```python {linenos=table,hl_lines=[3, 23]}
 # Define shape of wavepacket
 x = np.linspace(-np.pi, np.pi, 200)
 f = lambda x: np.exp(- x**2 / 2) * np.cos(10*x)
@@ -137,7 +137,7 @@ def shift(t, c = 1):
     return(wavepacket,)
 
 # Animate
-ani = anim.FuncAnimation(fig, shift, frames = 200, fargs = (0.03,),
+ani = anim.FuncAnimation(fig, shift, frames = 200, fargs = (-0.03,),
                          interval = 30, blit = True)
 ```
 
