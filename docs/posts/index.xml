@@ -6,7 +6,16 @@
     <description>Recent content in Posts on Raibatak Das</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 31 Jan 2021 22:36:55 -0500</lastBuildDate><atom:link href="https://dododas.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 29 Mar 2021 00:02:51 -0400</lastBuildDate><atom:link href="https://dododas.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Complex-step derivative approximation</title>
+      <link>https://dododas.github.io/posts/2021/2021-03-28-complex-step-derivative/</link>
+      <pubDate>Mon, 29 Mar 2021 00:02:51 -0400</pubDate>
+      
+      <guid>https://dododas.github.io/posts/2021/2021-03-28-complex-step-derivative/</guid>
+      <description>&lt;p&gt;This post explains the complex-step derivative approximation - a formidable-sounding but simple and elegant numerical method to compute the first derivative of a function using complex arithmetic.&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Animations with matplotlib - 2: Random walks</title>
       <link>https://dododas.github.io/posts/2021/2021-01-31-matplotlib-rw/</link>
