@@ -1,39 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en-us" dir="ltr">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Animations with matplotlib - 2: Random walks"><meta property="og:title" content="Animations with matplotlib - 2: Random walks" />
+<meta name="description" content="This post is the second in a series on how to use the matplotlib.animation module to create animated plots. The examples here use this module to create animations of 2D random walks.">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light dark"><meta property="og:title" content="Animations with matplotlib - 2: Random walks" />
 <meta property="og:description" content="This post is the second in a series on how to use the matplotlib.animation module to create animated plots. The examples here use this module to create animations of 2D random walks." />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://dododas.github.io/posts/2021/2021-01-31-matplotlib-rw/" />
+<meta property="og:url" content="https://dododas.github.io/posts/2021/2021-01-31-matplotlib-rw/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-01-31T22:36:55-05:00" />
 <meta property="article:modified_time" content="2021-01-31T22:36:55-05:00" />
 <title>Animations with matplotlib - 2: Random walks | Raibatak Das</title>
+<link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/favicon.png" type="image/x-icon">
-
-
-<link rel="stylesheet" href="/book.min.68d45956421753cdf6bcfc865ede445c56afc5bcaaebfe02961f44fe77d8f45a.css" integrity="sha256-aNRZVkIXU832vPyGXt5EXFavxbyq6/4Clh9E/nfY9Fo=">
-
-
-<script defer src="/en.search.min.4d133949a63bdbe10cd851c4885e90eaa8dbf015ebb365f45afa8a6ce3d4bb31.js" integrity="sha256-TRM5SaY72&#43;EM2FHEiF6Q6qjb8BXrs2X0WvqKbOPUuzE="></script>
-
+<link rel="stylesheet" href="/book.min.c58292d36b18b675680ab9baea2029204537b839ea72f258746ec0f32ce8d6c8.css" integrity="sha256-xYKS02sYtnVoCrm66iApIEU3uDnqcvJYdG7A8yzo1sg=" crossorigin="anonymous">
+  <script defer src="/flexsearch.min.js"></script>
+  <script defer src="/en.search.min.78166b9d46e23e0ea915cb6887a30b633e7bc4fad10c8b6b9f6fa532271c19ba.js" integrity="sha256-eBZrnUbiPg6pFctoh6MLYz57xPrRDItrn2&#43;lMiccGbo=" crossorigin="anonymous"></script>
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
 -->
-
   
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css" integrity="sha384-t5CR+zwDAROtph0PXGte6ia8heboACF9R5l/DiY+WZ3P2lxNgvJkQk5n7GPvLMYw" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
 
     
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js" integrity="sha384-FaFLTlohFghEIZkw6VGwmf9ISTubWAVYW8tG8+w2LAIftJEULZABrF9PPFv+tVkH" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
 
     
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js" integrity="sha384-bHBqxz8fokvgoJ/sc17HODNxa42TlaEhB+w8ZJXTc2nZf1VgEaFZeZvT4Mznfz0v" crossorigin="anonymous"
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
         onload="renderMathInElement(document.body);"></script>
-  
+
   <script>
   document.addEventListener("DOMContentLoaded", function() {
       renderMathInElement(document.body, {
@@ -53,22 +50,23 @@ https://github.com/alex-shpak/hugo-book
 
 
 </head>
-
-<body>
-  <input type="checkbox" class="hidden" id="menu-control" />
-  <main class="flex container">
-
-    <aside class="book-menu fixed">
-      <nav>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
 <h2 class="book-brand">
-  <a href="https://dododas.github.io/"><span>Raibatak Das</span>
+  <a class="flex align-center" href="/"><span>Raibatak Das</span>
   </a>
 </h2>
 
 
 <div class="book-search">
-  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" />
-  <div class="book-search-spinner spinner hidden"></div>
+  <input type="text" id="book-search-input" placeholder="Search" aria-label="Search" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
   <ul id="book-search-results"></ul>
 </div>
 
@@ -76,7 +74,14 @@ https://github.com/alex-shpak/hugo-book
 
 
 
-    <ul>
+
+
+
+
+
+
+
+  <ul>
 <li><a href="/posts"><strong>Posts</strong></a></li>
 <li><a href="/"><strong>About</strong></a></li>
 </ul>
@@ -85,379 +90,46 @@ https://github.com/alex-shpak/hugo-book
 
 
 
+
+
+
+
+
 </nav>
 
 
-<script>
-(function() {
-  var menu = document.querySelector("aside.book-menu nav");
-  addEventListener("beforeunload", function(event) {
-    localStorage.setItem("menu.scrollTop", menu.scrollTop);
-  });
-  menu.scrollTop = localStorage.getItem("menu.scrollTop");
-})();
-</script>
 
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
     </aside>
 
     <div class="book-page">
-      <header class="flex align-center justify-between book-header">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
   <label for="menu-control">
     <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
+
   <strong>Animations with matplotlib - 2: Random walks</strong>
-</header>
 
-      
-<article class="markdown">
-  <h1>
-    <a href="/posts/2021/2021-01-31-matplotlib-rw/">Animations with matplotlib - 2: Random walks</a>
-  </h1>
-  
-
-<div>
-
-  <h5>January 31, 2021</h5>
-
-
-
-  
-
-  
-    <a href="/tags/python/">python</a>, <a href="/tags/matplotlib/">matplotlib</a>, <a href="/tags/random%20walk/">random walk</a>
-    <br />
-  
-
-
-</div>
-
-
-  <p><p>This post is the second in a series on how to use the <code>matplotlib.animation</code> module to create animated plots. The examples here use this module to create animations of 2D random walks.</p>
-<h2 id="introduction">Introduction</h2>
-<p><code>matplotlib</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> is a python library for creating high quality scientific plots. It contains a module <code>matplotlib.animation</code> to create animations. This post shows examples of using this module to create some interesting visualizations of 2D random walks.</p>
-<h3 id="random-walks">Random walks</h3>
-<p>Random walks<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> are models for many physical phenomena, such as the movement of molecules in a liquid or gas, and the diffusion of proteins on the cell membrane. To simulate a random walk, a particle is placed at some initial position $\bold{r}_0 = (x_0, y_0)$ and advanced using the recursion relation:</p>
-<p>$$ \bold{r}_{j+1} = (x_j + \delta x, y_j + \delta y) $$</p>
-<p>The displacement along each axis is a normally distributed random variable:
-$$ \delta x, \delta y \sim \cal{N}(0, \sigma) $$</p>
-<p>This algorithm produces a Gaussian random walk. The standard deviation $\sigma$ of the normal distribution is related to the diffusion coefficient of the particle<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>.</p>
-<p>In the examples below, particles are initially placed within a small central region of the simulation domain. Each particle moves independently, following the random walk algorithm above. Over time, the aggregated random motion of the particles disperses them like a drop of ink mixing in water.</p>
-<h2 id="examples">Examples</h2>
-<p>These examples follow a common template:</p>
-<ol>
-<li>Set up an empty plot</li>
-<li>Initialize with plot elements, eg: points in their initial location</li>
-<li>Update plot element attributes, eg: change point coordinates</li>
-</ol>
-<p>Step 3 is repeated at each frame to advance the animation. The function <code>FuncAnimation()</code> implements these steps.</p>
-<p>First, Load the needed libraries</p>
-<div class="highlight"><pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">numpy</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">np</span>
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">matplotlib.pyplot</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">plt</span>
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">matplotlib</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">mpl</span>
-<span style="color:#069;font-weight:bold">import</span> <span style="color:#0cf;font-weight:bold">matplotlib.animation</span> <span style="color:#069;font-weight:bold">as</span> <span style="color:#0cf;font-weight:bold">anim</span>
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">IPython.display</span> <span style="color:#069;font-weight:bold">import</span> HTML
-<span style="color:#069;font-weight:bold">from</span> <span style="color:#0cf;font-weight:bold">pathlib</span> <span style="color:#069;font-weight:bold">import</span> Path
-</code></pre></div><h3 id="example-1-diffusing-particles">Example 1: Diffusing particles</h3>
-<p>The first simulation shows the position of particles over time. In the next code block, <code>init()</code> plots the particles in their initial position, <code>move()</code> updates particle positions using the random walk algorithm above, and <code>FuncAnimation()</code> uses these functions as inputs to generate the animation:</p>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># Initialize particle positions within a central square </span>
-nparticles <span style="color:#555">=</span> <span style="color:#f60">50</span>
-r0 <span style="color:#555">=</span> <span style="color:#f60">0.45</span> <span style="color:#555">+</span> <span style="color:#f60">0.1</span> <span style="color:#555">*</span> np<span style="color:#555">.</span>random<span style="color:#555">.</span>rand(nparticles, <span style="color:#f60">2</span>)
+  <label for="toc-control">
     
-<span style="color:#09f;font-style:italic"># Create figure</span>
-fig, ax <span style="color:#555">=</span> plt<span style="color:#555">.</span>subplots(figsize <span style="color:#555">=</span> (<span style="color:#f60">5</span>, <span style="color:#f60">5</span>))
-pos <span style="color:#555">=</span> [ax<span style="color:#555">.</span>plot([], [], <span style="color:#c30">&#34;o&#34;</span>, color <span style="color:#555">=</span> <span style="color:#c30">&#34;C3&#34;</span>, ms <span style="color:#555">=</span> <span style="color:#f60">6</span>, alpha <span style="color:#555">=</span> <span style="color:#f60">0.8</span>)[<span style="color:#f60">0</span>] 
-       <span style="color:#069;font-weight:bold">for</span> j <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(nparticles)]
-
-<span style="color:#09f;font-style:italic"># Plot initial particle positions</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">init</span>():
-    <span style="color:#069;font-weight:bold">for</span> jj, p <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(pos):
-        p<span style="color:#555">.</span>set_data(r0[jj, <span style="color:#f60">0</span>], r0[jj, <span style="color:#f60">1</span>])
-    <span style="color:#09f;font-style:italic"># Fix plot appearance</span>
-    ax<span style="color:#555">.</span>set_xlim([<span style="color:#f60">0</span>, <span style="color:#f60">1</span>])
-    ax<span style="color:#555">.</span>set_xticks([])
-    ax<span style="color:#555">.</span>set_ylim([<span style="color:#f60">0</span>, <span style="color:#f60">1</span>])
-    ax<span style="color:#555">.</span>set_yticks([])
-    ax<span style="color:#555">.</span>set_title(<span style="color:#c30">&#34;Example 1: Brownian motion&#34;</span>)
-    <span style="color:#069;font-weight:bold">return</span>(pos)
-
-<span style="color:#09f;font-style:italic"># Update particle positions</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">move</span>(k, sigma <span style="color:#555">=</span> <span style="color:#f60">0.01</span>):
-    <span style="color:#09f;font-style:italic"># Apply random normal displacement along each axis</span>
-    <span style="color:#069;font-weight:bold">for</span> p <span style="color:#000;font-weight:bold">in</span> pos:
-        x, y <span style="color:#555">=</span> p<span style="color:#555">.</span>get_data()
-        dx, dy <span style="color:#555">=</span> <span style="color:#366">tuple</span>(sigma <span style="color:#555">*</span> np<span style="color:#555">.</span>random<span style="color:#555">.</span>randn(<span style="color:#f60">2</span>))
-        p<span style="color:#555">.</span>set_data(x <span style="color:#555">+</span> dx, y <span style="color:#555">+</span> dy)
-    <span style="color:#069;font-weight:bold">return</span>(pos)
-
-ani <span style="color:#555">=</span> anim<span style="color:#555">.</span>FuncAnimation(fig, move, init_func <span style="color:#555">=</span> init,
-                         frames <span style="color:#555">=</span> <span style="color:#f60">300</span>, interval <span style="color:#555">=</span> <span style="color:#f60">50</span>, blit <span style="color:#555">=</span> True)</code></pre></td></tr></table>
-</div>
-</div>
-<p>The resulting output shows how particles diffuse and disperse away from their initial locations.</p>
-<div>
-  <iframe width="100%" height="480px" src="rw-particles.html" name="" style="border:none;"> </iframe> 
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
 </div>
 
-<h3 id="example-2-particle-tracks">Example 2: Particle tracks</h3>
-<p>The next example plots the trajectory of each particle. To do this efficiently, first simulate the entire trajectory for each particle, and store all trajectories in a <code>numpy</code> array:</p>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">simulate_rw</span>(nparticles <span style="color:#555">=</span> <span style="color:#f60">15</span>, nframes <span style="color:#555">=</span> <span style="color:#f60">200</span>, sigma <span style="color:#555">=</span> <span style="color:#f60">0.01</span>):
-    <span style="color:#c30">&#34;&#34;&#34;Simulate trajectories of diffusing particles&#34;&#34;&#34;</span>
-    <span style="color:#09f;font-style:italic"># Initialize particle positions</span>
-    displacements <span style="color:#555">=</span> np<span style="color:#555">.</span>zeros((nframes, <span style="color:#f60">2</span>, nparticles))
-    displacements[<span style="color:#f60">0</span>, :, :] <span style="color:#555">=</span> <span style="color:#f60">0.45</span> <span style="color:#555">+</span> <span style="color:#f60">0.1</span> <span style="color:#555">*</span> np<span style="color:#555">.</span>random<span style="color:#555">.</span>rand(<span style="color:#f60">2</span>, nparticles)
-    <span style="color:#09f;font-style:italic"># Simulate Brownian random walk</span>
-    displacements[<span style="color:#f60">1</span>:, :, :] <span style="color:#555">=</span> np<span style="color:#555">.</span>random<span style="color:#555">.</span>normal(scale <span style="color:#555">=</span> sigma, 
-                                               size <span style="color:#555">=</span> (nframes<span style="color:#555">-</span><span style="color:#f60">1</span>, <span style="color:#f60">2</span>, nparticles))
-    <span style="color:#09f;font-style:italic"># Compute positions</span>
-    r <span style="color:#555">=</span> np<span style="color:#555">.</span>cumsum(displacements, axis <span style="color:#555">=</span> <span style="color:#f60">0</span>)
-    <span style="color:#069;font-weight:bold">return</span>(r)
-</code></pre></td></tr></table>
-</div>
-</div><p>Then plot the trajectories by showing the progress up to each frame. Note how the function <code>set_markevery()</code> is used to display both the marker and the line for each track.</p>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># Generate tracks</span>
-positions <span style="color:#555">=</span> simulate_rw()
-nframes, _, nparticles <span style="color:#555">=</span> positions<span style="color:#555">.</span>shape
-
-<span style="color:#09f;font-style:italic"># Create figure</span>
-fig, ax <span style="color:#555">=</span> plt<span style="color:#555">.</span>subplots(figsize <span style="color:#555">=</span> (<span style="color:#f60">5</span>, <span style="color:#f60">5</span>))
-pts <span style="color:#555">=</span> [ax<span style="color:#555">.</span>plot([], [], <span style="color:#c30">&#34;-o&#34;</span>, alpha <span style="color:#555">=</span> <span style="color:#f60">0.8</span>)[<span style="color:#f60">0</span>] 
-       <span style="color:#069;font-weight:bold">for</span> j <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(nparticles)]
-
-<span style="color:#09f;font-style:italic"># Plot initial particle positions</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">init</span>():
-    r0 <span style="color:#555">=</span> positions[<span style="color:#f60">0</span>,:,:]
-    <span style="color:#069;font-weight:bold">for</span> jj, p <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(pts):
-        p<span style="color:#555">.</span>set_data(r0[<span style="color:#f60">0</span>, jj], r0[<span style="color:#f60">1</span>, jj])
-    <span style="color:#09f;font-style:italic"># Set plot appearance</span>
-    ax<span style="color:#555">.</span>set_xlim([<span style="color:#f60">0</span>, <span style="color:#f60">1</span>])
-    ax<span style="color:#555">.</span>set_xticks([])
-    ax<span style="color:#555">.</span>set_ylim([<span style="color:#f60">0</span>, <span style="color:#f60">1</span>])
-    ax<span style="color:#555">.</span>set_yticks([])
-    <span style="color:#069;font-weight:bold">return</span>(pts)
-
-<span style="color:#09f;font-style:italic"># Update particle positions</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">move</span>(k):
-    <span style="color:#069;font-weight:bold">for</span> jj, p <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(pts):
-        r <span style="color:#555">=</span> positions[:k<span style="color:#555">+</span><span style="color:#f60">1</span>, :, jj]
-        p<span style="color:#555">.</span>set_data(r[:, <span style="color:#f60">0</span>], r[:, <span style="color:#f60">1</span>])
-        p<span style="color:#555">.</span>set_markevery((k, k<span style="color:#555">+</span><span style="color:#f60">1</span>))
-    <span style="color:#069;font-weight:bold">return</span>(pts)
-
-ani <span style="color:#555">=</span> anim<span style="color:#555">.</span>FuncAnimation(fig, move, init_func <span style="color:#555">=</span> init,
-                         frames <span style="color:#555">=</span> nframes, interval <span style="color:#555">=</span> <span style="color:#f60">50</span>, blit <span style="color:#555">=</span> True)
-</code></pre></td></tr></table>
-</div>
-</div><p>The output shows how diffusing particles explore space:</p>
-<div>
-  <iframe width="100%" height="480px" src="rw-tracks.html" name="" style="border:none;"> </iframe> 
-</div>
-
-<h3 id="example-3-particle-trails">Example 3: Particle trails</h3>
-<p>In this example, the animaiton shows a &ldquo;trail&rdquo; behind each particle rather than the complete trajectory. The maximum trail length can be changed in the <code>move()</code> function below.</p>
-<div class="highlight"><div style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
-<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre style="background-color:#f0f3f3;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#09f;font-style:italic"># Create figure</span>
-fig, ax <span style="color:#555">=</span> plt<span style="color:#555">.</span>subplots(figsize <span style="color:#555">=</span> (<span style="color:#f60">5</span>, <span style="color:#f60">5</span>))
-pts <span style="color:#555">=</span> [ax<span style="color:#555">.</span>plot([], [], <span style="color:#c30">&#34;-o&#34;</span>, alpha <span style="color:#555">=</span> <span style="color:#f60">0.85</span>)[<span style="color:#f60">0</span>] 
-       <span style="color:#069;font-weight:bold">for</span> j <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">range</span>(nparticles)]
-
-<span style="color:#09f;font-style:italic"># Plot initial particle positions</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">init</span>():
-    r0 <span style="color:#555">=</span> positions[<span style="color:#f60">0</span>,:,:]
-    <span style="color:#069;font-weight:bold">for</span> jj, p <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(pts):
-        p<span style="color:#555">.</span>set_data(r0[<span style="color:#f60">0</span>, jj], r0[<span style="color:#f60">1</span>, jj])
-    <span style="color:#09f;font-style:italic"># Set plot appearance</span>
-    ax<span style="color:#555">.</span>set_xlim([<span style="color:#f60">0</span>, <span style="color:#f60">1</span>])
-    ax<span style="color:#555">.</span>set_xticks([])
-    ax<span style="color:#555">.</span>set_ylim([<span style="color:#f60">0</span>, <span style="color:#f60">1</span>])
-    ax<span style="color:#555">.</span>set_yticks([])
-    <span style="color:#069;font-weight:bold">return</span>(pts)
-
-<span style="color:#09f;font-style:italic"># Update particle positions</span>
-<span style="color:#069;font-weight:bold">def</span> <span style="color:#c0f">move</span>(k, trail <span style="color:#555">=</span> <span style="color:#f60">30</span>):
-    <span style="color:#069;font-weight:bold">for</span> jj, p <span style="color:#000;font-weight:bold">in</span> <span style="color:#366">enumerate</span>(pts):
-        <span style="color:#069;font-weight:bold">if</span> (k <span style="color:#555">&lt;=</span> trail):
-            r <span style="color:#555">=</span> positions[:k<span style="color:#555">+</span><span style="color:#f60">1</span>, :, jj]
-            n <span style="color:#555">=</span> k
-        <span style="color:#069;font-weight:bold">else</span>:
-            r <span style="color:#555">=</span> positions[(k<span style="color:#555">+</span><span style="color:#f60">1</span> <span style="color:#555">-</span> trail):k<span style="color:#555">+</span><span style="color:#f60">1</span>, :, jj]
-            n <span style="color:#555">=</span> trail<span style="color:#555">-</span><span style="color:#f60">1</span>
-        p<span style="color:#555">.</span>set_data(r[:, <span style="color:#f60">0</span>], r[:, <span style="color:#f60">1</span>])
-        p<span style="color:#555">.</span>set_markevery((n, n<span style="color:#555">+</span><span style="color:#f60">1</span>))
-    <span style="color:#069;font-weight:bold">return</span>(pts)
-
-ani <span style="color:#555">=</span> anim<span style="color:#555">.</span>FuncAnimation(fig, move, init_func <span style="color:#555">=</span> init,
-                         frames <span style="color:#555">=</span> nframes, interval <span style="color:#555">=</span> <span style="color:#f60">50</span>, blit <span style="color:#555">=</span> True)</code></pre></td></tr></table>
-</div>
-</div>
-<p>which produces the following output</p>
-<div>
-  <iframe width="100%" height="480px" src="rw-trails.html" name="" style="border:none;"> </iframe> 
-</div>
-
-<h2 id="summary-and-references">Summary and references</h2>
-<p>These examples demonstrate how the <code>matplotlib.animation</code> module can be used to create dynamic visualizations. The complete code for this post is available in <a href="https://github.com/dododas/dododas.github.io/blob/main/content/posts/2021-01-31-matplotlib-rw/mpl-rw-animations.ipynb">this jupyter notebook</a></p>
-<p><strong>References</strong>:</p>
-<ul>
-<li><a href="https://matplotlib.org/3.3.3/api/animation_api.html">https://matplotlib.org/3.3.3/api/animation_api.html</a></li>
-<li><a href="https://towardsdatascience.com/animations-with-matplotlib-d96375c5442c">https://towardsdatascience.com/animations-with-matplotlib-d96375c5442c</a></li>
-<li><a href="https://brushingupscience.com/2016/06/21/matplotlib-animations-the-easy-way/">https://brushingupscience.com/2016/06/21/matplotlib-animations-the-easy-way/</a></li>
-<li><a href="https://brushingupscience.com/2019/08/01/elaborate-matplotlib-animations/">https://brushingupscience.com/2019/08/01/elaborate-matplotlib-animations/</a></li>
-<li><a href="mpl-rw-animations.ipynb">Download Jupyter notebook with code</a></li>
-</ul>
-<section class="footnotes" role="doc-endnotes">
-<hr>
-<ol>
-<li id="fn:1" role="doc-endnote">
-<p><a href="https://matplotlib.org/">https://matplotlib.org/</a> <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
-</li>
-<li id="fn:2" role="doc-endnote">
-<p><a href="https://en.wikipedia.org/wiki/Random_walk">https://en.wikipedia.org/wiki/Random_walk</a> <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
-</li>
-<li id="fn:3" role="doc-endnote">
-<p>$\sigma = \sqrt{2Dt}$ where $D$ is the diffusion coefficient, and $t$ is the time interval between observation <a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
-</li>
-</ol>
-</section></p>
-</article>
-
-      <div class="book-footer justify-between">
-  
 
   
-
-  
-
-</div>
-
-      
-    </div>
-
+  <aside class="hidden clearfix">
     
   
-
-  <aside class="book-toc levels-6 fixed">
-    <nav id="TableOfContents">
+<nav id="TableOfContents">
   <ul>
     <li>
       <ul>
@@ -478,13 +150,445 @@ ani <span style="color:#555">=</span> anim<span style="color:#555">.</span>FuncA
     </li>
   </ul>
 </nav>
+
+
+
   </aside>
+  
+ 
+      </header>
+
+      
+      
+<article class="markdown">
+  <h1>
+    <a href="/posts/2021/2021-01-31-matplotlib-rw/">Animations with matplotlib - 2: Random walks</a>
+  </h1>
+  
+  <h5>January 31, 2021</h5>
 
 
 
+  
+
+  
+  <div>
+    
+      <a href="/tags/python/">python</a>, 
+      <a href="/tags/matplotlib/">matplotlib</a>, 
+      <a href="/tags/random-walk/">random walk</a>
+  </div>
+  
+
+
+
+<p>This post is the second in a series on how to use the <code>matplotlib.animation</code> module to create animated plots. The examples here use this module to create animations of 2D random walks.</p>
+<h2 id="introduction">
+  Introduction
+  <a class="anchor" href="#introduction">#</a>
+</h2>
+<p><code>matplotlib</code><sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup> is a python library for creating high quality scientific plots. It contains a module <code>matplotlib.animation</code> to create animations. This post shows examples of using this module to create some interesting visualizations of 2D random walks.</p>
+<h3 id="random-walks">
+  Random walks
+  <a class="anchor" href="#random-walks">#</a>
+</h3>
+<p>Random walks<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup> are models for many physical phenomena, such as the movement of molecules in a liquid or gas, and the diffusion of proteins on the cell membrane. To simulate a random walk, a particle is placed at some initial position $\bold{r}_0 = (x_0, y_0)$ and advanced using the recursion relation:</p>
+<p>$$ \bold{r}_{j+1} = (x_j + \delta x, y_j + \delta y) $$</p>
+<p>The displacement along each axis is a normally distributed random variable:
+$$ \delta x, \delta y \sim \cal{N}(0, \sigma) $$</p>
+<p>This algorithm produces a Gaussian random walk. The standard deviation $\sigma$ of the normal distribution is related to the diffusion coefficient of the particle<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>.</p>
+<p>In the examples below, particles are initially placed within a small central region of the simulation domain. Each particle moves independently, following the random walk algorithm above. Over time, the aggregated random motion of the particles disperses them like a drop of ink mixing in water.</p>
+<h2 id="examples">
+  Examples
+  <a class="anchor" href="#examples">#</a>
+</h2>
+<p>These examples follow a common template:</p>
+<ol>
+<li>Set up an empty plot</li>
+<li>Initialize with plot elements, eg: points in their initial location</li>
+<li>Update plot element attributes, eg: change point coordinates</li>
+</ol>
+<p>Step 3 is repeated at each frame to advance the animation. The function <code>FuncAnimation()</code> implements these steps.</p>
+<p>First, Load the needed libraries</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib <span style="color:#66d9ef">as</span> mpl
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> matplotlib.animation <span style="color:#66d9ef">as</span> anim
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> IPython.display <span style="color:#f92672">import</span> HTML
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pathlib <span style="color:#f92672">import</span> Path
+</span></span></code></pre></div><h3 id="example-1-diffusing-particles">
+  Example 1: Diffusing particles
+  <a class="anchor" href="#example-1-diffusing-particles">#</a>
+</h3>
+<p>The first simulation shows the position of particles over time. In the next code block, <code>init()</code> plots the particles in their initial position, <code>move()</code> updates particle positions using the random walk algorithm above, and <code>FuncAnimation()</code> uses these functions as inputs to generate the animation:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Initialize particle positions within a central square </span>
+</span></span><span style="display:flex;"><span>nparticles <span style="color:#f92672">=</span> <span style="color:#ae81ff">50</span>
+</span></span><span style="display:flex;"><span>r0 <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.45</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">0.1</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(nparticles, <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create figure</span>
+</span></span><span style="display:flex;"><span>fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(figsize <span style="color:#f92672">=</span> (<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>pos <span style="color:#f92672">=</span> [ax<span style="color:#f92672">.</span>plot([], [], <span style="color:#e6db74">&#34;o&#34;</span>, color <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;C3&#34;</span>, ms <span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.8</span>)[<span style="color:#ae81ff">0</span>] 
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(nparticles)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Plot initial particle positions</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">init</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> jj, p <span style="color:#f92672">in</span> enumerate(pos):
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>set_data(r0[jj, <span style="color:#ae81ff">0</span>], r0[jj, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Fix plot appearance</span>
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_xlim([<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_xticks([])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_ylim([<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_yticks([])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_title(<span style="color:#e6db74">&#34;Example 1: Brownian motion&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>(pos)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Update particle positions</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">move</span>(k, sigma <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.01</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Apply random normal displacement along each axis</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> p <span style="color:#f92672">in</span> pos:
+</span></span><span style="display:flex;"><span>        x, y <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>get_data()
+</span></span><span style="display:flex;"><span>        dx, dy <span style="color:#f92672">=</span> tuple(sigma <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>randn(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>set_data(x <span style="color:#f92672">+</span> dx, y <span style="color:#f92672">+</span> dy)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>(pos)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ani <span style="color:#f92672">=</span> anim<span style="color:#f92672">.</span>FuncAnimation(fig, move, init_func <span style="color:#f92672">=</span> init,
+</span></span><span style="display:flex;"><span>                         frames <span style="color:#f92672">=</span> <span style="color:#ae81ff">300</span>, interval <span style="color:#f92672">=</span> <span style="color:#ae81ff">50</span>, blit <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)</span></span></code></pre></td></tr></table>
+</div>
+</div>
+<p>The resulting output shows how particles diffuse and disperse away from their initial locations.</p>
+<div>
+  <iframe width="100%" height="480px" src="rw-particles.html" name="" style="border:none;"> </iframe> 
+</div>
+
+<h3 id="example-2-particle-tracks">
+  Example 2: Particle tracks
+  <a class="anchor" href="#example-2-particle-tracks">#</a>
+</h3>
+<p>The next example plots the trajectory of each particle. To do this efficiently, first simulate the entire trajectory for each particle, and store all trajectories in a <code>numpy</code> array:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">simulate_rw</span>(nparticles <span style="color:#f92672">=</span> <span style="color:#ae81ff">15</span>, nframes <span style="color:#f92672">=</span> <span style="color:#ae81ff">200</span>, sigma <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.01</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;Simulate trajectories of diffusing particles&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Initialize particle positions</span>
+</span></span><span style="display:flex;"><span>    displacements <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros((nframes, <span style="color:#ae81ff">2</span>, nparticles))
+</span></span><span style="display:flex;"><span>    displacements[<span style="color:#ae81ff">0</span>, :, :] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.45</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">0.1</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(<span style="color:#ae81ff">2</span>, nparticles)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Simulate Brownian random walk</span>
+</span></span><span style="display:flex;"><span>    displacements[<span style="color:#ae81ff">1</span>:, :, :] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>normal(scale <span style="color:#f92672">=</span> sigma, 
+</span></span><span style="display:flex;"><span>                                               size <span style="color:#f92672">=</span> (nframes<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, nparticles))
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Compute positions</span>
+</span></span><span style="display:flex;"><span>    r <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>cumsum(displacements, axis <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>(r)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Then plot the trajectories by showing the progress up to each frame. Note how the function <code>set_markevery()</code> is used to display both the marker and the line for each track.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Generate tracks</span>
+</span></span><span style="display:flex;"><span>positions <span style="color:#f92672">=</span> simulate_rw()
+</span></span><span style="display:flex;"><span>nframes, _, nparticles <span style="color:#f92672">=</span> positions<span style="color:#f92672">.</span>shape
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Create figure</span>
+</span></span><span style="display:flex;"><span>fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(figsize <span style="color:#f92672">=</span> (<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>pts <span style="color:#f92672">=</span> [ax<span style="color:#f92672">.</span>plot([], [], <span style="color:#e6db74">&#34;-o&#34;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.8</span>)[<span style="color:#ae81ff">0</span>] 
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(nparticles)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Plot initial particle positions</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">init</span>():
+</span></span><span style="display:flex;"><span>    r0 <span style="color:#f92672">=</span> positions[<span style="color:#ae81ff">0</span>,:,:]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> jj, p <span style="color:#f92672">in</span> enumerate(pts):
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>set_data(r0[<span style="color:#ae81ff">0</span>, jj], r0[<span style="color:#ae81ff">1</span>, jj])
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Set plot appearance</span>
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_xlim([<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_xticks([])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_ylim([<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_yticks([])
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>(pts)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Update particle positions</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">move</span>(k):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> jj, p <span style="color:#f92672">in</span> enumerate(pts):
+</span></span><span style="display:flex;"><span>        r <span style="color:#f92672">=</span> positions[:k<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, :, jj]
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>set_data(r[:, <span style="color:#ae81ff">0</span>], r[:, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>set_markevery((k, k<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>(pts)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ani <span style="color:#f92672">=</span> anim<span style="color:#f92672">.</span>FuncAnimation(fig, move, init_func <span style="color:#f92672">=</span> init,
+</span></span><span style="display:flex;"><span>                         frames <span style="color:#f92672">=</span> nframes, interval <span style="color:#f92672">=</span> <span style="color:#ae81ff">50</span>, blit <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>The output shows how diffusing particles explore space:</p>
+<div>
+  <iframe width="100%" height="480px" src="rw-tracks.html" name="" style="border:none;"> </iframe> 
+</div>
+
+<h3 id="example-3-particle-trails">
+  Example 3: Particle trails
+  <a class="anchor" href="#example-3-particle-trails">#</a>
+</h3>
+<p>In this example, the animaiton shows a &ldquo;trail&rdquo; behind each particle rather than the complete trajectory. The maximum trail length can be changed in the <code>move()</code> function below.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Create figure</span>
+</span></span><span style="display:flex;"><span>fig, ax <span style="color:#f92672">=</span> plt<span style="color:#f92672">.</span>subplots(figsize <span style="color:#f92672">=</span> (<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">5</span>))
+</span></span><span style="display:flex;"><span>pts <span style="color:#f92672">=</span> [ax<span style="color:#f92672">.</span>plot([], [], <span style="color:#e6db74">&#34;-o&#34;</span>, alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.85</span>)[<span style="color:#ae81ff">0</span>] 
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(nparticles)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Plot initial particle positions</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">init</span>():
+</span></span><span style="display:flex;"><span>    r0 <span style="color:#f92672">=</span> positions[<span style="color:#ae81ff">0</span>,:,:]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> jj, p <span style="color:#f92672">in</span> enumerate(pts):
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>set_data(r0[<span style="color:#ae81ff">0</span>, jj], r0[<span style="color:#ae81ff">1</span>, jj])
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Set plot appearance</span>
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_xlim([<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_xticks([])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_ylim([<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>    ax<span style="color:#f92672">.</span>set_yticks([])
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>(pts)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Update particle positions</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">move</span>(k, trail <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> jj, p <span style="color:#f92672">in</span> enumerate(pts):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (k <span style="color:#f92672">&lt;=</span> trail):
+</span></span><span style="display:flex;"><span>            r <span style="color:#f92672">=</span> positions[:k<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, :, jj]
+</span></span><span style="display:flex;"><span>            n <span style="color:#f92672">=</span> k
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            r <span style="color:#f92672">=</span> positions[(k<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> trail):k<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, :, jj]
+</span></span><span style="display:flex;"><span>            n <span style="color:#f92672">=</span> trail<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>set_data(r[:, <span style="color:#ae81ff">0</span>], r[:, <span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>        p<span style="color:#f92672">.</span>set_markevery((n, n<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>(pts)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ani <span style="color:#f92672">=</span> anim<span style="color:#f92672">.</span>FuncAnimation(fig, move, init_func <span style="color:#f92672">=</span> init,
+</span></span><span style="display:flex;"><span>                         frames <span style="color:#f92672">=</span> nframes, interval <span style="color:#f92672">=</span> <span style="color:#ae81ff">50</span>, blit <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)</span></span></code></pre></td></tr></table>
+</div>
+</div>
+<p>which produces the following output</p>
+<div>
+  <iframe width="100%" height="480px" src="rw-trails.html" name="" style="border:none;"> </iframe> 
+</div>
+
+<h2 id="summary-and-references">
+  Summary and references
+  <a class="anchor" href="#summary-and-references">#</a>
+</h2>
+<p>These examples demonstrate how the <code>matplotlib.animation</code> module can be used to create dynamic visualizations. The complete code for this post is available in <a href="https://github.com/dododas/dododas.github.io/blob/main/content/posts/2021-01-31-matplotlib-rw/mpl-rw-animations.ipynb">this jupyter notebook</a></p>
+<p><strong>References</strong>:</p>
+<ul>
+<li><a href="https://matplotlib.org/3.3.3/api/animation_api.html">https://matplotlib.org/3.3.3/api/animation_api.html</a></li>
+<li><a href="https://towardsdatascience.com/animations-with-matplotlib-d96375c5442c">https://towardsdatascience.com/animations-with-matplotlib-d96375c5442c</a></li>
+<li><a href="https://brushingupscience.com/2016/06/21/matplotlib-animations-the-easy-way/">https://brushingupscience.com/2016/06/21/matplotlib-animations-the-easy-way/</a></li>
+<li><a href="https://brushingupscience.com/2019/08/01/elaborate-matplotlib-animations/">https://brushingupscience.com/2019/08/01/elaborate-matplotlib-animations/</a></li>
+<li><a href="mpl-rw-animations.ipynb">Download Jupyter notebook with code</a></li>
+</ul>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://matplotlib.org/">https://matplotlib.org/</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://en.wikipedia.org/wiki/Random_walk">https://en.wikipedia.org/wiki/Random_walk</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p>$\sigma = \sqrt{2Dt}$ where $D$ is the diffusion coefficient, and $t$ is the time interval between observation&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#introduction">Introduction</a>
+          <ul>
+            <li><a href="#random-walks">Random walks</a></li>
+          </ul>
+        </li>
+        <li><a href="#examples">Examples</a>
+          <ul>
+            <li><a href="#example-1-diffusing-particles">Example 1: Diffusing particles</a></li>
+            <li><a href="#example-2-particle-tracks">Example 2: Particle tracks</a></li>
+            <li><a href="#example-3-particle-trails">Example 3: Particle trails</a></li>
+          </ul>
+        </li>
+        <li><a href="#summary-and-references">Summary and references</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
   </main>
 
   
 </body>
-
 </html>
+
+
+
+
+
+
+
+
+
+
+
+

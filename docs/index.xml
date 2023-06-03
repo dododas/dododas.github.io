@@ -6,7 +6,16 @@
     <description>Recent content in Home on Raibatak Das</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 Mar 2021 00:02:51 -0400</lastBuildDate><atom:link href="https://dododas.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 15 Apr 2023 14:23:23 -0700</lastBuildDate><atom:link href="https://dododas.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Odds explained graphically</title>
+      <link>https://dododas.github.io/posts/2023/2023-04-15-odds-explained/</link>
+      <pubDate>Sat, 15 Apr 2023 14:23:23 -0700</pubDate>
+      
+      <guid>https://dododas.github.io/posts/2023/2023-04-15-odds-explained/</guid>
+      <description>&lt;p&gt;This post uses some simple plots to explain the concept of odds and how it is related to risk, or the probability of an event.&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Complex-step derivative approximation</title>
       <link>https://dododas.github.io/posts/2021/2021-03-28-complex-step-derivative/</link>

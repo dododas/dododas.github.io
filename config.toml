@@ -15,7 +15,7 @@ theme = "hugo-book"
 
 # Syntax highlighting
 [markup.highlight]
-  style = "manni"
+  style = "monokai"
 
 [markup.tableOfContents]
   startLevel = 1
